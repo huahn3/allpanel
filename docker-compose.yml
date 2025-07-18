@@ -1,6 +1,6 @@
 services:
   allpanel:
-    image: ghcr.io/huahn3/allpanel2:latest
+    image: ghcr.io/huahn3/allpanel:latest
     container_name: allpanel
     ports:
       - "3000:3000"
