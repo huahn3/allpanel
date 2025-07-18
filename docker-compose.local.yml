@@ -1,6 +1,6 @@
 services:
   allpanel:
-    build: .  # 使用本地构建
+    image: ghcr.io/huahn3/allpanel2:latest
     container_name: allpanel
     ports:
       - "3000:3000"
@@ -20,7 +20,7 @@ services:
 # Windows 用户请使用以下配置（注释掉上面的 Linux/macOS 配置）
 # services:
 #   allpanel:
-#     build: .
+#     image: ghcr.io/your-username/allpanel:latest
 #     container_name: allpanel
 #     ports:
 #       - "3000:3000"
