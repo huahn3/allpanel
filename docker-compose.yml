@@ -13,6 +13,8 @@ services:
       - NODE_ENV=production
       - DATABASE_URL=file:/app/data/dev.db
       - NEXT_TELEMETRY_DISABLED=1
+    # 使用root用户运行以避免权限问题
+    user: "0:0"
     restart: unless-stopped
 
 # Windows 用户请使用以下配置（注释掉上面的 Linux/macOS 配置）

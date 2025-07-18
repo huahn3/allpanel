@@ -40,6 +40,21 @@ RUN mkdir -p /app/data && chown nextjs:nodejs /app/data
 # 复制启动脚本
 COPY --from=builder /app/package.json ./package.json
 
+# 创建启动脚本来处理权限问题
+RUN echo '#!/bin/sh\n\
+# 确保数据目录存在并有正确权限\n\
+mkdir -p /app/data\n\
+# 如果是root用户，修改权限后切换到nextjs用户\n\
+if [ "$(id -u)" = "0" ]; then\n\
+  chown -R nextjs:nodejs /app/data\n\
+  exec su-exec nextjs "$@"\n\
+else\n\
+  exec "$@"\n\
+fi' > /app/entrypoint.sh && chmod +x /app/entrypoint.sh
+
+# 安装su-exec用于用户切换
+RUN apk add --no-cache su-exec
+
 USER nextjs
 
 EXPOSE 3000
@@ -49,4 +64,5 @@ ENV DATABASE_URL="file:/app/data/dev.db"
 ENV HOSTNAME="0.0.0.0"
 ENV NEXT_TELEMETRY_DISABLED=1
 
+ENTRYPOINT ["/app/entrypoint.sh"]
 CMD ["sh", "-c", "node scripts/init-db.js && exec node server.js"]

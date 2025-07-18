@@ -13,6 +13,27 @@ async function initDatabase() {
       console.log('📁 Created data directory');
     }
 
+    // 检查目录权限
+    try {
+      fs.accessSync('/app/data', fs.constants.W_OK);
+      console.log('✅ Data directory is writable');
+    } catch (error) {
+      console.error('❌ Data directory is not writable:', error.message);
+      console.log('🔧 Attempting to fix permissions...');
+
+      // 尝试创建一个测试文件来验证权限
+      const testFile = '/app/data/.test';
+      try {
+        fs.writeFileSync(testFile, 'test');
+        fs.unlinkSync(testFile);
+        console.log('✅ Permissions fixed');
+      } catch (permError) {
+        console.error('❌ Cannot write to data directory. Please check volume mount permissions.');
+        console.error('💡 Try: docker run with --user $(id -u):$(id -g) or ensure the ./data directory has correct permissions');
+        process.exit(1);
+      }
+    }
+
     const prisma = new PrismaClient();
 
     // 推送数据库架构
